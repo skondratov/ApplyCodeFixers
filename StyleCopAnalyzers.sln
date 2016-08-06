@@ -250,6 +250,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbreviationFix.Test", "Abb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbreviationFix.Vsix", "AbbreviationFix\AbbreviationFix.Vsix\AbbreviationFix.Vsix.csproj", "{83AA9E43-8C60-44F3-9055-932414C9EECC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplyCodeFixers", "ApplyCodeFixers\ApplyCodeFixers.csproj", "{81DA4714-35D2-4D97-BB45-9E9D2245C5E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -288,6 +290,10 @@ Global
 		{83AA9E43-8C60-44F3-9055-932414C9EECC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83AA9E43-8C60-44F3-9055-932414C9EECC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83AA9E43-8C60-44F3-9055-932414C9EECC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DA4714-35D2-4D97-BB45-9E9D2245C5E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DA4714-35D2-4D97-BB45-9E9D2245C5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DA4714-35D2-4D97-BB45-9E9D2245C5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DA4714-35D2-4D97-BB45-9E9D2245C5E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

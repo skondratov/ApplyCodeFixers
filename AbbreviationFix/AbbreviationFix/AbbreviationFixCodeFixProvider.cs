@@ -136,6 +136,7 @@ namespace AbbreviationFix
 
                     int index = 0;
                     var baseName = newName;
+                    // @@ broken
                     while (!await RenameHelper.IsValidNewMemberNameAsync(semanticModel, declaredSymbol, newName, context.CancellationToken).ConfigureAwait(false))
                     {
                         index++;

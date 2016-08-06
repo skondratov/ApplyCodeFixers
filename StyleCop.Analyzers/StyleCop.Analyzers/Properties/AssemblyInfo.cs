@@ -44,3 +44,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("StyleCopTester")]
 [assembly: InternalsVisibleTo("StyleCopTester")]
 [assembly: InternalsVisibleTo("AbbreviationFix")]
+[assembly: InternalsVisibleTo("ApplyCodeFixers")]
