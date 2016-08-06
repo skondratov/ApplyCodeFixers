@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Text.RegularExpressions;
+
 namespace StyleCop.Analyzers.Helpers
 {
     using System.Collections.Immutable;
@@ -15,6 +17,11 @@ namespace StyleCop.Analyzers.Helpers
 
     internal static class RenameHelper
     {
+        internal static MatchCollection GetAbbreveaturesInSymbol(SyntaxToken syntaxToken)
+        {
+            return Regex.Matches(syntaxToken.ValueText, "([A-Z]{2,})+");
+        }
+
         public static async Task<Solution> RenameSymbolAsync(Document document, SyntaxNode root, SyntaxToken declarationToken, string newName, CancellationToken cancellationToken)
         {
             var annotatedRoot = root.ReplaceToken(declarationToken, declarationToken.WithAdditionalAnnotations(RenameAnnotation.Create()));

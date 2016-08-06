@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyleCop.Analyzers", "StyleCop.Analyzers\StyleCop.Analyzers\StyleCop.Analyzers.csproj", "{3B052737-06CE-4182-AE0F-08EB82DFA73E}"
 EndProject
@@ -244,6 +244,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyleCopTester", "StyleCop.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyleCop.Analyzers.CodeFixes", "StyleCop.Analyzers\StyleCop.Analyzers.CodeFixes\StyleCop.Analyzers.CodeFixes.csproj", "{F91F7815-4E63-4698-B053-E57B2D707194}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbreviationFix", "AbbreviationFix\AbbreviationFix\AbbreviationFix.csproj", "{74053ADE-03D1-45B4-8186-A47BBDE23CA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbreviationFix.Test", "AbbreviationFix\AbbreviationFix.Test\AbbreviationFix.Test.csproj", "{A231FA05-6345-4569-8935-6BFC97561467}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbbreviationFix.Vsix", "AbbreviationFix\AbbreviationFix.Vsix\AbbreviationFix.Vsix.csproj", "{83AA9E43-8C60-44F3-9055-932414C9EECC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -270,6 +276,18 @@ Global
 		{F91F7815-4E63-4698-B053-E57B2D707194}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F91F7815-4E63-4698-B053-E57B2D707194}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F91F7815-4E63-4698-B053-E57B2D707194}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74053ADE-03D1-45B4-8186-A47BBDE23CA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74053ADE-03D1-45B4-8186-A47BBDE23CA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74053ADE-03D1-45B4-8186-A47BBDE23CA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74053ADE-03D1-45B4-8186-A47BBDE23CA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A231FA05-6345-4569-8935-6BFC97561467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A231FA05-6345-4569-8935-6BFC97561467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A231FA05-6345-4569-8935-6BFC97561467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A231FA05-6345-4569-8935-6BFC97561467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83AA9E43-8C60-44F3-9055-932414C9EECC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83AA9E43-8C60-44F3-9055-932414C9EECC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83AA9E43-8C60-44F3-9055-932414C9EECC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83AA9E43-8C60-44F3-9055-932414C9EECC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
