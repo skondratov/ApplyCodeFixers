@@ -1,4 +1,7 @@
-﻿namespace StyleCopTester
+﻿using AbbreviationFix;
+using StyleCop.Analyzers.SpacingRules;
+
+namespace StyleCopTester
 {
     using System;
     using System.Collections.Concurrent;
@@ -33,22 +36,12 @@
 
     internal class AppConfig
     {
-        public List<string> DllToImport { get; } = new List<string>();
-
-        public List<Tuple<string, string>> AnalyzerFixerPairs { get; } = new List<Tuple<string, string>>();
-
         public bool CheckOnlyMode { get; private set; }
 
         public string SolutionPath { get; private set; }
 
         public void Initialize(string[] args)
         {
-            // Idea is to load all dlls from folder.
-            DllToImport.Add(@"F:\Projects\StyleCopAnalyzers\ApplyCodeFixers\bin\Debug\AbbreviationFix.dll");
-
-            // Load sequance analyzer - fixer pairs from config file
-            AnalyzerFixerPairs.Add(Tuple.Create("AbbreviationFix.AbbreviationFixAnalyzer", "AbbreviationFix.AbbreviationFixCodeFixProvider"));
-
             CheckOnlyMode = args.Contains("/check");
 
             SolutionPath = args.SingleOrDefault(i => !i.StartsWith("/", StringComparison.Ordinal));
@@ -210,6 +203,8 @@
                 equivalenceGroups.AddRange(await CodeFixEquivalenceGroup.CreateAsync(fixerTask.FixProvider, diagnostics, solution, cancellationToken).ConfigureAwait(true));
                 if (equivalenceGroups.Count > 1)
                 {
+                    // TODO: Consider ot reload solution after applying each equivalent group.
+                    // TODO: Collect info what Fixers have actions with different eqvivalence keys.
                     WriteLine("Multiple equvivalnce groups, please check your config. List of keys", ConsoleColor.Yellow);
                     foreach (var codeFixEquivalenceGroup in equivalenceGroups)
                     {
@@ -288,50 +283,9 @@
 
         private static List<FixerTask> GetFixerTasks()
         {
-            var analyzers = new Dictionary<string, DiagnosticAnalyzer>();
-            var fixerProviders = new Dictionary<string, CodeFixProvider>();
-
-            foreach (var dllPath in appConfig.DllToImport)
-            {
-                var assembly = Assembly.LoadFrom(dllPath);
-                var diagnosticAnalyzerType = typeof(DiagnosticAnalyzer);
-                var codeFixProviderType = typeof(CodeFixProvider);
-
-                foreach (var type in assembly.GetTypes())
-                {
-                    if (type.IsAbstract)
-                        continue;
-
-                    if (type.IsSubclassOf(diagnosticAnalyzerType) &&
-                        appConfig.AnalyzerFixerPairs.Any(x => x.Item1 == type.FullName))
-                    // @@ Avoid ugly type string comprasion
-                    {
-                        analyzers[type.FullName] = (DiagnosticAnalyzer)Activator.CreateInstance(type);
-                    }
-
-                    if (type.IsSubclassOf(codeFixProviderType) &&
-                        appConfig.AnalyzerFixerPairs.Any(x => x.Item2 == type.FullName))
-                    // @@ Avoid ugly type string comprasion
-                    {
-                        fixerProviders[type.FullName] = (CodeFixProvider)Activator.CreateInstance(type);
-                    }
-                }
-            }
-
             var ret = new List<FixerTask>();
-            foreach (var analazyerFixer in appConfig.AnalyzerFixerPairs)
-            {
-                try
-                {
-                    ret.Add(new FixerTask(analyzers[analazyerFixer.Item1], fixerProviders[analazyerFixer.Item2]));
-                }
-                catch (KeyNotFoundException)
-                {
-                    WriteLine($"Can't find {analazyerFixer.Item1}/{analazyerFixer.Item2} in provided binaries",
-                        ConsoleColor.Red);
-                    Environment.Exit(1);
-                }
-            }
+            ret.Add(new FixerTask(new AbbreviationFixAnalyzer(), new AbbreviationFixCodeFixProvider()));
+            ret.Add(new FixerTask(new SA1003SymbolsMustBeSpacedCorrectly(), new SA1003CodeFixProvider()));
 
             return ret;
         }
