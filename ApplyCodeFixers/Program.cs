@@ -159,7 +159,7 @@ namespace StyleCopTester
                     }
                 }
 
-                // TODO: Implement quick check, exit with code 1 when first diagnostic found
+                // TODO: Implement quick check: Exit with code 1 when first violation found
                 if (allDiagnostics.Any())
                 {
                     Environment.Exit(1);
@@ -188,7 +188,11 @@ namespace StyleCopTester
         {
             Console.WriteLine("Calculating fixes");
 
-            foreach (var fixerTask in fixerTasks)
+            var taskIndex = 0;
+            var fixerTask = fixerTasks[taskIndex];
+            Action scheduleNextTask = () => taskIndex++;
+
+            while (taskIndex != fixerTasks.Count)
             {
                 // TODO: Check analyzer - fixer compatibility
                 var solution = await LoadSolution(appConfig.SolutionPath, cancellationToken, stopwatch);
@@ -201,51 +205,68 @@ namespace StyleCopTester
 
                 var equivalenceGroups = new List<CodeFixEquivalenceGroup>();
                 equivalenceGroups.AddRange(await CodeFixEquivalenceGroup.CreateAsync(fixerTask.FixProvider, diagnostics, solution, cancellationToken).ConfigureAwait(true));
+
+                if (equivalenceGroups.Count == 0)
+                {
+                    scheduleNextTask();
+                    continue;
+                }
+
+                var fix = equivalenceGroups[0];
+                try
+                {
+                    stopwatch.Restart();
+                    WriteLine($"Calculating fix for {fix.CodeFixEquivalenceKey} using {fix.FixAllProvider} for {fix.NumberOfDiagnostics} instances.");
+                    var operations = await fix.GetOperationsAsync(cancellationToken).ConfigureAwait(true);
+                    var applyOperations = operations.OfType<ApplyChangesOperation>().ToList();
+                    if (applyOperations.Count > 1)
+                    {
+                        // TODO: Consider ot reload solution after applying each single code action.
+                        // TODO: Need to collect info which Fixers have multiple code actions operations.
+                        WriteLine("Only a single code action operations are supported.", ConsoleColor.Red);
+                        scheduleNextTask();
+                        continue;
+                    }
+
+                    if (applyOperations.Count == 0)
+                    {
+                        WriteLine("No changes were found to apply.", ConsoleColor.Yellow);
+                    }
+                    else
+                    {
+                        applyOperations[0].Apply(solution.Workspace, cancellationToken);
+                    }
+
+                    WriteLine(
+                        $"Calculating changes completed in {stopwatch.ElapsedMilliseconds}ms. This is {fix.NumberOfDiagnostics / stopwatch.Elapsed.TotalSeconds:0.000} instances/second.", ConsoleColor.Yellow);
+                }
+                catch (Exception ex)
+                {
+                    // Report thrown exceptions
+                    WriteLine($"The fix '{fix.CodeFixEquivalenceKey}' threw an exception after {stopwatch.ElapsedMilliseconds}ms:", ConsoleColor.Red);
+                    WriteLine(ex.ToString(), ConsoleColor.Yellow);
+                    return;
+                }
+
                 if (equivalenceGroups.Count > 1)
                 {
-                    // TODO: Consider ot reload solution after applying each equivalent group.
-                    // TODO: Collect info what Fixers have actions with different eqvivalence keys.
-                    WriteLine("Multiple equvivalnce groups, please check your config. List of keys", ConsoleColor.Yellow);
+                    // TODO: Need to collect info about Fixers that have actions with different eqvivalence keys. Please report about these cases
+                    WriteLine("Multiple equvivalnce groups per fixer may lead to problems. Please report this case", ConsoleColor.Yellow);
                     foreach (var codeFixEquivalenceGroup in equivalenceGroups)
                     {
-                        WriteLine(string.Join(", ", codeFixEquivalenceGroup.CodeFixProvider.FixableDiagnosticIds) + "/" + codeFixEquivalenceGroup.CodeFixEquivalenceKey, ConsoleColor.Yellow);
+                        WriteLine(string.Join(", ", codeFixEquivalenceGroup.CodeFixProvider.FixableDiagnosticIds) + "/" + 
+                        codeFixEquivalenceGroup.CodeFixEquivalenceKey, ConsoleColor.Yellow);
                     }
-                }
 
-                foreach (var fix in equivalenceGroups)
-                {
-                    try
-                    {
-                        stopwatch.Restart();
-                        Console.WriteLine($"Calculating fix for {fix.CodeFixEquivalenceKey} using {fix.FixAllProvider} for {fix.NumberOfDiagnostics} instances.");
-                        var operations = await fix.GetOperationsAsync(cancellationToken).ConfigureAwait(true);
-                        var applyOperations = operations.OfType<ApplyChangesOperation>().ToList();
-                        if (applyOperations.Count > 1)
-                        {
-                            Console.Error.WriteLine("/apply can only apply a single code action operation.");
-                        }
-                        else if (applyOperations.Count == 0)
-                        {
-                            Console.WriteLine("No changes were found to apply.");
-                        }
-                        else
-                        {
-                            applyOperations[0].Apply(solution.Workspace, cancellationToken);
-                        }
-
-                        WriteLine($"Calculating changes completed in {stopwatch.ElapsedMilliseconds}ms. This is {fix.NumberOfDiagnostics / stopwatch.Elapsed.TotalSeconds:0.000} instances/second.", ConsoleColor.Yellow);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Report thrown exceptions
-                        WriteLine($"The fix '{fix.CodeFixEquivalenceKey}' threw an exception after {stopwatch.ElapsedMilliseconds}ms:", ConsoleColor.Yellow);
-                        WriteLine(ex.ToString(), ConsoleColor.Yellow);
-                    }
+                    // Reload solution and apply same fixer one more time. It is assumed that count of equivalence groups
+                    // will be reduced during iterations.. Otherwise application will stuck
+                    continue;
                 }
+                scheduleNextTask();
             }
         }
 
-        private static void WriteLine(string text, ConsoleColor color)
+        private static void WriteLine(string text, ConsoleColor color = ConsoleColor.White)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(text);
@@ -358,7 +379,7 @@ namespace StyleCopTester
         {
             Console.WriteLine("Usage: ApplyCodeFixer [options] <Solution>");
             Console.WriteLine("Options:");
-            Console.WriteLine("/check       Do not fix problems. Exit code = 1 in case if there are something to fix, exitcode = 0 otherwise");
+            Console.WriteLine("/check       Do not fix problems. Exit code = 1 in case if there is something to fix, exitcode = 0 otherwise");
         }
     }
 }
