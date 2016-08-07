@@ -35,23 +35,15 @@ namespace AbbreviationFix.Test
 
     namespace ConsoleApplication1
     {
-        class TypeName
-        {   
+        class TYPEname
+        {
+            int _someVar;
+            int SOMEVar;
+            int ABCd;
+            int abcDE;
+            int StdNameWithTwoCapsCCharacters;
         }
     }";
-            var expected = new DiagnosticResult
-            {
-                Id = "AbbreviationFix",
-                Message = String.Format("Type name '{0}' contains lowercase letters", "TypeName"),
-                Severity = DiagnosticSeverity.Warning,
-                Locations =
-                    new[] {
-                            new DiagnosticResultLocation("Test0.cs", 11, 15)
-                        }
-            };
-
-            VerifyCSharpDiagnostic(test, expected);
-
             var fixtest = @"
     using System;
     using System.Collections.Generic;
@@ -62,8 +54,13 @@ namespace AbbreviationFix.Test
 
     namespace ConsoleApplication1
     {
-        class TYPENAME
-        {   
+        class TypEname
+        {
+            int _someVar;
+            int _someVar1;
+            int abCd;
+            int abcdE;
+            int StdNameWithTwoCapsCcharacters;
         }
     }";
             VerifyCSharpFix(test, fixtest);
