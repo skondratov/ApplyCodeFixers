@@ -59,7 +59,7 @@ namespace StyleCop.Analyzers.Helpers
                 }
 
                 var length = match.Index + match.Value.Length;
-                if (syntaxToken.ValueText.Length < length)
+                if (syntaxToken.ValueText.Length > length)
                 {
                     length++;
                 }
