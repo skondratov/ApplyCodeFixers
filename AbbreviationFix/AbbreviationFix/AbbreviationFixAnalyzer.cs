@@ -13,17 +13,6 @@ namespace AbbreviationFix
     using Microsoft.CodeAnalysis.Diagnostics;
     using StyleCop.Analyzers.Helpers;
 
-    public class AbbreviationFixAnalyzerConfig
-    {
-        public HashSet<string> Exceptions { get; }
-
-        public AbbreviationFixAnalyzerConfig()
-        {
-            Exceptions = new HashSet<string>();
-            Exceptions.Add("AX");
-        }
-    }
-
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AbbreviationFixAnalyzer : DiagnosticAnalyzer
     {
@@ -32,8 +21,6 @@ namespace AbbreviationFix
         private const string MessageFormat = "Element '{0}'  must not contain series of capital letters";
         private const string Description = "";
         private const string HelpLink = "";
-
-        private static AbbreviationFixAnalyzerConfig config = new AbbreviationFixAnalyzerConfig();
 
         private static readonly DiagnosticDescriptor Descriptor =
             new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, "NamingRules", DiagnosticSeverity.Warning, true, Description, HelpLink);
