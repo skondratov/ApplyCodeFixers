@@ -72,9 +72,10 @@ namespace AbbreviationFix
                         {
                             if (memberSyntax.Parent.Parent is FieldDeclarationSyntax)
                             {
-                                var accessibility = (memberSyntax.Parent.Parent as FieldDeclarationSyntax).GetDeclaredAccessibility(
-                                    await context.Document.GetSemanticModelAsync(context.CancellationToken),
-                                    context.CancellationToken);
+                                var accessibility = (memberSyntax.Parent.Parent as FieldDeclarationSyntax)
+                                    .GetDeclaredAccessibility(
+                                        await context.Document.GetSemanticModelAsync(context.CancellationToken),
+                                        context.CancellationToken);
 
                                 if (accessibility <= Accessibility.Private)
                                 {
@@ -82,16 +83,14 @@ namespace AbbreviationFix
                                     subRet[0] = char.ToLower(subRet[0]);
                                 }
                             }
-
-                            subRet[0] = char.ToLower(subRet[0]);
-                        }
-
-                        if (memberSyntax is InterfaceDeclarationSyntax && abbreveature.Value[0] == 'I')
-                        {
-                            subRet[1] = char.ToUpper(subRet[1]);
+                            else
+                            {
+                                subRet[0] = char.ToLower(subRet[0]);
+                            }
                         }
                     }
 
+                    // According to ReSharper next sumbol afte digit - must be in uppercase
                     var firstAfterDigit = Regex.Match(abbreveature.Value, @"^\d+([A-Z])[^\d]");
                     if (firstAfterDigit.Success &&
                         firstAfterDigit.Groups.Count > 1)
@@ -101,6 +100,7 @@ namespace AbbreviationFix
                         subRet[capture.Index] = charAfterDigit;
                     }
 
+                    // If last symbol in match no last in word - do capitalize, due to PascalCase
                     if (originalName.Length != subRet.Length + name.Length)
                     {
                         subRet[subRet.Length - 1] = char.ToUpper(subRet[subRet.Length - 1]);
@@ -113,27 +113,7 @@ namespace AbbreviationFix
 
                 var newName = prefix + name;
 
-                if (memberSyntax is NamespaceDeclarationSyntax)
-                {
-                    // namespaces are not symbols. So we are just renaming the namespace
-                    Func<CancellationToken, Task<Document>> renameNamespace = cancellationToken =>
-                    {
-                        IdentifierNameSyntax identifierSyntax = (IdentifierNameSyntax)token.Parent;
-
-                        var newIdentifierSyntax = identifierSyntax.WithIdentifier(SyntaxFactory.Identifier(newName));
-
-                        var newRoot = root.ReplaceNode(identifierSyntax, newIdentifierSyntax);
-                        return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
-                    };
-
-                    context.RegisterCodeFix(
-                        CodeAction.Create(
-                            string.Format("Rename to {0}", newName),
-                            renameNamespace,
-                            nameof(AbbreviationFixCodeFixProvider) + "_" + diagnostic.Id),
-                        diagnostic);
-                }
-                else if (memberSyntax != null)
+                if (memberSyntax != null)
                 {
                     SemanticModel semanticModel = await document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 
@@ -143,9 +123,9 @@ namespace AbbreviationFix
                         continue;
                     }
 
+                    // In case if new name already exists.
                     int index = 0;
                     var baseName = newName;
-                    // @@ broken
                     while (!await RenameHelper.IsValidNewMemberNameAsync(semanticModel, declaredSymbol, newName, context.CancellationToken).ConfigureAwait(false))
                     {
                         index++;

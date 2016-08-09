@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AbbreviationFix
 {
@@ -10,7 +13,18 @@ namespace AbbreviationFix
     using Microsoft.CodeAnalysis.Diagnostics;
     using StyleCop.Analyzers.Helpers;
 
-        [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class AbbreviationFixAnalyzerConfig
+    {
+        public HashSet<string> Exceptions { get; }
+
+        public AbbreviationFixAnalyzerConfig()
+        {
+            Exceptions = new HashSet<string>();
+            Exceptions.Add("AX");
+        }
+    }
+
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class AbbreviationFixAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "AbbreviationFixAnalyzer";
@@ -19,11 +33,12 @@ namespace AbbreviationFix
         private const string Description = "";
         private const string HelpLink = "";
 
+        private static AbbreviationFixAnalyzerConfig config = new AbbreviationFixAnalyzerConfig();
+
         private static readonly DiagnosticDescriptor Descriptor =
             new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, "NamingRules", DiagnosticSeverity.Warning, true, Description, HelpLink);
 
         private static readonly Action<CompilationStartAnalysisContext> CompilationStartAction = HandleCompilationStart;
-        private static readonly Action<SyntaxNodeAnalysisContext> NamespaceDeclarationAction = HandleNamespaceDeclaration;
         private static readonly Action<SyntaxNodeAnalysisContext> ClassDeclarationAction = HandleClassDeclaration;
         private static readonly Action<SyntaxNodeAnalysisContext> InterfaceDeclarationAction = HandleInterfaceDeclaration;
         private static readonly Action<SyntaxNodeAnalysisContext> EnumDeclarationAction = HandleEnumDeclaration;
@@ -48,7 +63,6 @@ namespace AbbreviationFix
         private static void HandleCompilationStart(CompilationStartAnalysisContext context)
         {
             context.RegisterSyntaxNodeActionHonorExclusions(InterfaceDeclarationAction, SyntaxKind.InterfaceDeclaration);
-            context.RegisterSyntaxNodeActionHonorExclusions(NamespaceDeclarationAction, SyntaxKind.NamespaceDeclaration);
             context.RegisterSyntaxNodeActionHonorExclusions(ClassDeclarationAction, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeActionHonorExclusions(EnumDeclarationAction, SyntaxKind.EnumDeclaration);
             context.RegisterSyntaxNodeActionHonorExclusions(EnumMemberDeclarationAction, SyntaxKind.EnumMemberDeclaration);
@@ -84,12 +98,6 @@ namespace AbbreviationFix
 
                 CheckElementNameToken(context, variableDeclarator.Identifier);
             }
-        }
-
-        private static void HandleNamespaceDeclaration(SyntaxNodeAnalysisContext context)
-        {
-            NameSyntax nameSyntax = ((NamespaceDeclarationSyntax)context.Node).Name;
-            CheckNameSyntax(context, nameSyntax);
         }
 
         private static void CheckNameSyntax(SyntaxNodeAnalysisContext context, NameSyntax nameSyntax)
@@ -215,18 +223,8 @@ namespace AbbreviationFix
                 return;
             }
 
-            var matches = RenameHelper.GetAbbreveaturesInSymbol(identifier);
-            if (matches.Count == 0)
-            {
-                return;
-            }
-
-            // Avoid IName, where IN treated as abbreviation
-            if (identifier.Parent is InterfaceDeclarationSyntax &&
-                matches.Count == 1 &&
-                matches[0].Index == 0 &&
-                matches[0].Value.Length > 3 &&
-                matches[0].Value[0] == 'I')
+            IEnumerable<Match> matches = RenameHelper.GetAbbreveaturesInSymbol(identifier);
+            if (!matches.Any())
             {
                 return;
             }

@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace StyleCop.Analyzers.Helpers
 {
@@ -17,20 +21,63 @@ namespace StyleCop.Analyzers.Helpers
 
     internal static class RenameHelper
     {
-        internal static MatchCollection GetAbbreveaturesInSymbol(SyntaxToken syntaxToken)
+        /// <summary>
+        /// Match opts (usefull for test):
+        /// public static int NAME +
+        /// public static int NameDDisable3DD +
+        /// public static int Name3DDaDDaDD ++
+        /// public static int Name3DS1+
+        /// public static int NameDX3+
+        /// public static int DX3name +
+        /// public static int D3Xcase; -
+        /// public static int Name773DB33TFTname222DXS +++
+        /// public static int Name33nA -
+        /// </summary>
+        /// <param name="syntaxToken"></param>
+        /// <returns></returns>
+        internal static IEnumerable<Match> GetAbbreveaturesInSymbol(SyntaxToken syntaxToken)
         {
-            // Match opts:
-            //public int AX1 +
-            //public int NAME +
-            //public int NameDDisable3DD +
-            //public int Name3DDaDDaDD ++
-            //public int Name3DS1+
-            //public int NameDX3+
-            //public int DX3name +
-            //public int D3Xcase; -
-            //public int Name773DB33TFTname222DXS +++
-            //public int Name33nA -
-            return Regex.Matches(syntaxToken.ValueText, @"\d+[A-Z]{2,}$|\d+[A-Z]{3,}|[A-Z]{2,}$|[A-Z]{2,}\d+|[A-Z]{3,}");
+            var regex = @"\d+[A-Z]{2,}$|\d+[A-Z]{3,}|[A-Z]{2,}$|[A-Z]{2,}\d+|[A-Z]{3,}";
+
+            Func<SyntaxToken, bool> isInterface =
+                token => token.Parent is InterfaceDeclarationSyntax && syntaxToken.ValueText[0] == 'I';
+            if (isInterface(syntaxToken))
+            {
+                // Ignore I symbol for interfaces. ReSharper abbreveature fixing logic does not consider 'I'. E.g. IDDeal is not abbreviation.
+                regex = $@"^I|({regex})";
+            }
+
+            var matches = Regex.Matches(syntaxToken.ValueText, regex);
+
+            foreach (Match match in matches)
+            {
+                if (isInterface(syntaxToken) &&
+                    match == matches[0])
+                {
+                    // [UGLY]: Ignore first match. Will be happy if someone will rewrite regex to avoid these tricks in code
+                    continue;
+                }
+
+                var length = match.Index + match.Value.Length;
+                if (syntaxToken.ValueText.Length < length)
+                {
+                    length++;
+                }
+
+                // Check registred abbreviations. Handle them in ReSharper way. If word continues after abbreviation
+                // last capital letter is not included to abbreviation - it is start of new word.
+                var onlySymbols =
+                    Regex.Match(
+                        syntaxToken.ValueText.Substring(match.Index, length - match.Index),
+                        @"([A-Z]{2,})(?![a-z])");
+
+                if (DiagnosticConfig.AbbreviationsToSkip.Contains(onlySymbols.Value))
+                {
+                    continue;
+                }
+
+                yield return match;
+            }
         }
 
         public static async Task<Solution> RenameSymbolAsync(Document document, SyntaxNode root, SyntaxToken declarationToken, string newName, CancellationToken cancellationToken)
