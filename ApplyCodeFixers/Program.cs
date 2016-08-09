@@ -306,7 +306,7 @@ namespace StyleCopTester
         {
             var ret = new List<FixerTask>();
             ret.Add(new FixerTask(new AbbreviationFixAnalyzer(), new AbbreviationFixCodeFixProvider()));
-            ret.Add(new FixerTask(new SA1003SymbolsMustBeSpacedCorrectly(), new SA1003CodeFixProvider()));
+            //ret.Add(new FixerTask(new SA1003SymbolsMustBeSpacedCorrectly(), new SA1003CodeFixProvider()));
 
             return ret;
         }

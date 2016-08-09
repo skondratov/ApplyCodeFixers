@@ -225,7 +225,7 @@ namespace AbbreviationFix
             if (identifier.Parent is InterfaceDeclarationSyntax &&
                 matches.Count == 1 &&
                 matches[0].Index == 0 &&
-                matches[0].Value.Length == 2 &&
+                matches[0].Value.Length > 3 &&
                 matches[0].Value[0] == 'I')
             {
                 return;

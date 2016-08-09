@@ -19,7 +19,18 @@ namespace StyleCop.Analyzers.Helpers
     {
         internal static MatchCollection GetAbbreveaturesInSymbol(SyntaxToken syntaxToken)
         {
-            return Regex.Matches(syntaxToken.ValueText, "([A-Z]{2,})+");
+            // Match opts:
+            //public int AX1 +
+            //public int NAME +
+            //public int NameDDisable3DD +
+            //public int Name3DDaDDaDD ++
+            //public int Name3DS1+
+            //public int NameDX3+
+            //public int DX3name +
+            //public int D3Xcase; -
+            //public int Name773DB33TFTname222DXS +++
+            //public int Name33nA -
+            return Regex.Matches(syntaxToken.ValueText, @"\d+[A-Z]{2,}$|\d+[A-Z]{3,}|[A-Z]{2,}$|[A-Z]{2,}\d+|[A-Z]{3,}");
         }
 
         public static async Task<Solution> RenameSymbolAsync(Document document, SyntaxNode root, SyntaxToken declarationToken, string newName, CancellationToken cancellationToken)

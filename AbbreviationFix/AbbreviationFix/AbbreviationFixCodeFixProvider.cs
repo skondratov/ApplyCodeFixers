@@ -92,6 +92,15 @@ namespace AbbreviationFix
                         }
                     }
 
+                    var firstAfterDigit = Regex.Match(abbreveature.Value, @"^\d+([A-Z])[^\d]");
+                    if (firstAfterDigit.Success &&
+                        firstAfterDigit.Groups.Count > 1)
+                    {
+                        var capture = firstAfterDigit.Groups[1];
+                        var charAfterDigit = capture.Value.ToUpper()[0];
+                        subRet[capture.Index] = charAfterDigit;
+                    }
+
                     if (originalName.Length != subRet.Length + name.Length)
                     {
                         subRet[subRet.Length - 1] = char.ToUpper(subRet[subRet.Length - 1]);
