@@ -19,7 +19,39 @@ namespace StyleCop.Analyzers.Helpers
         {
             AbbreviationsToSkip = new HashSet<string>
                 {
-                    "AX", "DTO"
+                    //"AF",
+                    //"AJ",
+                    //"AWU",
+                    //"BC",
+                    //"CC",
+                    //"CPS",
+                    //"DB",
+                    //"DBA",
+                    //"DOB",
+                    //"DS",
+                    //"EVP",
+                    //"FI",
+                    //"ID",
+                    //"LPR",
+                    //"MI",
+                    //"MQ",
+                    //"MRIV",
+                    //"NA",
+                    //"NAICS",
+                    //"OK",
+                    //"OLEDB",
+                    //"PK",
+                    //"PS",
+                    //"SP",
+                    //"SPXML",
+                    //"SQL",
+                    //"SQLACCESS",
+                    //"SQLN",
+                    //"SQLXML",
+                    //"SSN",
+                    //"URL",
+                    //"US",
+                    //"XML"
                 };
         }
     }
