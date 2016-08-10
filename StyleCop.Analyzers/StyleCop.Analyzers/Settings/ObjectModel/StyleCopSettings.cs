@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using StyleCop.Analyzers.DocumentationRules;
+
 namespace StyleCop.Analyzers.Settings.ObjectModel
 {
     using Newtonsoft.Json;
@@ -57,6 +59,12 @@ namespace StyleCop.Analyzers.Settings.ObjectModel
         private DocumentationSettings documentationRules;
 
         /// <summary>
+        /// This is the backing field for the <see cref="AbbreviationRules"/> property.
+        /// </summary>
+        [JsonProperty("abbreviationRules", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        private AbbreviationSettings abbreviationRules;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StyleCopSettings"/> class during JSON deserialization.
         /// </summary>
         [JsonConstructor]
@@ -71,6 +79,7 @@ namespace StyleCop.Analyzers.Settings.ObjectModel
             this.maintainabilityRules = new MaintainabilitySettings();
             this.layoutRules = new LayoutSettings();
             this.documentationRules = new DocumentationSettings();
+            this.abbreviationRules = new AbbreviationSettings();
         }
 
         public IndentationSettings Indentation =>
@@ -96,5 +105,8 @@ namespace StyleCop.Analyzers.Settings.ObjectModel
 
         public DocumentationSettings DocumentationRules =>
             this.documentationRules;
+
+        public AbbreviationSettings AbbreviationRules =>
+            this.abbreviationRules;
     }
 }

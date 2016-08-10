@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using StyleCop.Analyzers;
 using StyleCop.Analyzers.Helpers;
 
 namespace AbbreviationFix
@@ -37,31 +34,32 @@ namespace AbbreviationFix
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var document = context.Document;
+            var settings = document.Project.AnalyzerOptions.GetStyleCopSettings(context.CancellationToken);
             var root = await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
             foreach (var diagnostic in context.Diagnostics)
             {
                 var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-                var abbreveatures = RenameHelper.GetAbbreveaturesInSymbol(token);
+                var abbreviations = AbbreviationHelper.GetAbbreviationsInSymbol(token, settings.AbbreviationRules);
                 var originalName = token.ValueText;
                 var memberSyntax = RenameHelper.GetParentDeclaration(token);
 
                 var prefix = string.Empty;
                 var name = new StringBuilder();
-                foreach (Match abbreveature in abbreveatures)
+                foreach (Match abbreviation in abbreviations)
                 {
-                    name.Append(originalName.Substring(name.Length, abbreveature.Index - name.Length));
+                    name.Append(originalName.Substring(name.Length, abbreviation.Index - name.Length));
 
-                    StringBuilder subRet = new StringBuilder(abbreveature.Value.ToLower());
+                    StringBuilder subRet = new StringBuilder(abbreviation.Value.ToLower());
                     subRet[0] = char.ToUpper(subRet[0]);
 
                     // Handle variable names which starts with '_'
-                    if (abbreveature.Index == 1 && originalName.StartsWith("_"))
+                    if (abbreviation.Index == 1 && originalName.StartsWith("_"))
                     {
                         subRet[0] = char.ToLower(subRet[0]);
                     }
 
-                    if (abbreveature.Index == 0)
+                    if (abbreviation.Index == 0)
                     {
                         if (memberSyntax is ParameterSyntax)
                         {
@@ -91,7 +89,7 @@ namespace AbbreviationFix
                     }
 
                     // According to ReSharper next sumbol afte digit - must be in uppercase
-                    var firstAfterDigit = Regex.Match(abbreveature.Value, @"^\d+([A-Z])[^\d]");
+                    var firstAfterDigit = Regex.Match(abbreviation.Value, @"^\d+([A-Z])[^\d]");
                     if (firstAfterDigit.Success &&
                         firstAfterDigit.Groups.Count > 1)
                     {
