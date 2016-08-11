@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using StyleCop.Analyzers;
@@ -15,9 +16,9 @@ namespace AbbreviationFix
     using StyleCop.Analyzers.Helpers;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class AbbreviationFixAnalyzer : DiagnosticAnalyzer
+    public class AbbreviationCSAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "AbbreviationFixAnalyzer";
+        public const string DiagnosticId = "AbbreviationAnalyzer";
         private const string Title = "Abbreviations are not allowed except officially registered";
         private const string MessageFormat = "Element '{0}'  must not contain series of capital letters";
         private const string Description = "";
@@ -91,6 +92,7 @@ namespace AbbreviationFix
         private static void HandleClassDeclaration(SyntaxNodeAnalysisContext context, StyleCopSettings settings)
         {
             CheckElementNameToken(context, ((ClassDeclarationSyntax)context.Node).Identifier, settings.AbbreviationRules);
+            Debug.WriteLine(((ClassDeclarationSyntax)context.Node).Identifier.ValueText);
         }
 
         private static void HandleInterfaceDeclaration(SyntaxNodeAnalysisContext context, StyleCopSettings settings)
@@ -174,25 +176,9 @@ namespace AbbreviationFix
             CheckElementNameToken(context, propertyDeclaration.Identifier, settings.AbbreviationRules);
         }
 
-        private static bool IsIdentifierValid(SyntaxToken identifier)
-        {
-            return !identifier.IsMissing && !string.IsNullOrEmpty(identifier.ValueText);
-        }
-
         private static void CheckElementNameToken(SyntaxNodeAnalysisContext context, SyntaxToken identifier, AbbreviationSettings settings)
         {
-            if (!IsIdentifierValid(identifier))
-            {
-                return;
-            }
-
-            IEnumerable<Match> matches = AbbreviationHelper.GetAbbreviationsInSymbol(identifier, settings);
-            if (!matches.Any())
-            {
-                return;
-            }
-
-            context.ReportDiagnostic(Diagnostic.Create(Descriptor, identifier.GetLocation(), identifier.ValueText));
+            AbbreviationHelper.CheckElementNameToken(context, identifier, settings, Descriptor);
         }
     }
 }

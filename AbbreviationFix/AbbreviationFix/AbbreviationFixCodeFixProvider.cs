@@ -21,7 +21,7 @@ namespace AbbreviationFix
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(AbbreviationFixAnalyzer.DiagnosticId); }
+            get { return ImmutableArray.Create(AbbreviationCSAnalyzer.DiagnosticId); }
         }
 
         /// <inheritdoc/>

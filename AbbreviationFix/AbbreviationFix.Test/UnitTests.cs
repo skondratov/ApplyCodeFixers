@@ -73,7 +73,7 @@ namespace AbbreviationFix.Test
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new AbbreviationFixAnalyzer();
+            return new AbbreviationCSAnalyzer();
         }
     }
 }

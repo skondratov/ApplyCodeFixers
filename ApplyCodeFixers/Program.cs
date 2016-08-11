@@ -123,14 +123,13 @@ namespace StyleCopTester
                 var solution = await LoadSolution(appConfig.SolutionPath, cancellationToken, stopwatch);
                 stopwatch.Restart();
 
-                List<Project> csharpProjects =
-                    solution.Projects.Where(i => i.Language == LanguageNames.CSharp).ToList();
+                List<Project> projects = solution.Projects.ToList();
 
-                Console.WriteLine("Number of projects:\t\t" + csharpProjects.Count);
-                Console.WriteLine("Number of documents:\t\t" + csharpProjects.Sum(x => x.DocumentIds.Count));
+                Console.WriteLine("Number of projects:\t\t" + projects.Count);
+                Console.WriteLine("Number of documents:\t\t" + projects.Sum(x => x.DocumentIds.Count));
 
                 var statistics =
-                    await GetAnalyzerStatisticsAsync(csharpProjects, cancellationToken).ConfigureAwait(true);
+                    await GetAnalyzerStatisticsAsync(projects, cancellationToken).ConfigureAwait(true);
 
                 Console.WriteLine("Number of syntax nodes:\t\t" + statistics.NumberofNodes);
                 Console.WriteLine("Number of syntax tokens:\t" + statistics.NumberOfTokens);
@@ -305,7 +304,7 @@ namespace StyleCopTester
         private static List<FixerTask> GetFixerTasks()
         {
             var ret = new List<FixerTask>();
-            ret.Add(new FixerTask(new AbbreviationFixAnalyzer(), new AbbreviationFixCodeFixProvider()));
+            ret.Add(new FixerTask(new AbbreviationCSAnalyzer(), new AbbreviationFixCodeFixProvider()));
             //ret.Add(new FixerTask(new SA1003SymbolsMustBeSpacedCorrectly(), new SA1003CodeFixProvider()));
 
             return ret;
@@ -318,11 +317,6 @@ namespace StyleCopTester
             // Make sure we analyze the projects in parallel
             foreach (var project in solution.Projects)
             {
-                if (project.Language != LanguageNames.CSharp)
-                {
-                    continue;
-                }
-
                 projectDiagnosticTasks.Add(new KeyValuePair<ProjectId, Task<ImmutableArray<Diagnostic>>>(project.Id, GetProjectAnalyzerDiagnosticsAsync(analyzers, project, force, cancellationToken)));
             }
 
