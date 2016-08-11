@@ -188,7 +188,6 @@ namespace StyleCopTester
             Console.WriteLine("Calculating fixes");
 
             var taskIndex = 0;
-            var fixerTask = fixerTasks[taskIndex];
             Action scheduleNextTask = () => taskIndex++;
 
             while (taskIndex != fixerTasks.Count)
@@ -197,6 +196,7 @@ namespace StyleCopTester
                 var solution = await LoadSolution(appConfig.SolutionPath, cancellationToken, stopwatch);
                 stopwatch.Restart();
 
+                var fixerTask = fixerTasks[taskIndex];
                 var diagnostics =
                     await
                         GetAnalyzerDiagnosticsAsync(solution, new[] { fixerTask.Analyzer }.ToImmutableArray(), false, cancellationToken)
@@ -305,6 +305,7 @@ namespace StyleCopTester
         {
             var ret = new List<FixerTask>();
             ret.Add(new FixerTask(new AbbreviationCSAnalyzer(), new AbbreviationFixCodeFixProvider()));
+            ret.Add(new FixerTask(new AbbreviationVBAnalyzer(), new AbbreviationFixCodeFixProvider()));
             //ret.Add(new FixerTask(new SA1003SymbolsMustBeSpacedCorrectly(), new SA1003CodeFixProvider()));
 
             return ret;

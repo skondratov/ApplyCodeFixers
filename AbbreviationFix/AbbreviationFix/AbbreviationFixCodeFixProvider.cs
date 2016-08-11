@@ -15,7 +15,7 @@ namespace AbbreviationFix
     /// <summary>
     /// Abbreviations are not allowed except officially register. Apply common naming rules for them
     /// </summary>
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AbbreviationFixCodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(AbbreviationFixCodeFixProvider))]
     [Shared]
     public class AbbreviationFixCodeFixProvider : CodeFixProvider
     {
