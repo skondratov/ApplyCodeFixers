@@ -1,4 +1,6 @@
-﻿namespace AbbreviationFix
+﻿using System.Diagnostics;
+
+namespace AbbreviationFix
 {
     using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
@@ -109,6 +111,7 @@
         private static void HandleClassStatement(SyntaxNodeAnalysisContext context, StyleCopSettings settings)
         {
             CheckElementNameToken(context, ((ClassStatementSyntax)context.Node).Identifier, settings.AbbreviationRules);
+            Debug.WriteLine(((ClassStatementSyntax)context.Node).Identifier.ValueText);
         }
 
         private static void CheckElementNameToken(SyntaxNodeAnalysisContext context, SyntaxToken identifier, AbbreviationSettings settings)

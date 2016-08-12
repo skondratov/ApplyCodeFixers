@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace AbbreviationFix
 {
-    class RenameVBHelper
+    internal class RenameVBHelper
     {
         public static SyntaxNode GetParentDeclaration(SyntaxToken token)
         {

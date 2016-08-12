@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Composition;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -130,6 +131,7 @@ namespace AbbreviationFix
                         newName = baseName + index;
                     }
 
+                    Debug.WriteLine("{0} => {1} | {2}", token.ValueText, newName, document.Name);
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),
