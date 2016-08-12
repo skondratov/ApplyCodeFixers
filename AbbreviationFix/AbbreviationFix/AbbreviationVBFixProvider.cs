@@ -118,7 +118,7 @@ namespace AbbreviationFix
                      * VB.NET - don't check existing members, because we change case only.
                      */
 
-                    Debug.WriteLine("{0} => {1} | {2}", token.ValueText, newName, document.Name);
+                    Debug.WriteLine("{0}|{1}|{2}", token.ValueText, newName, document.Name);
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using StyleCop.Analyzers.Settings.ObjectModel;
@@ -13,7 +11,7 @@ namespace AbbreviationFix
 {
     internal class AbbreviationHelper
     {
-        public const int MaxRenameCount = 100;
+        public const int MaxRenameCount = int.MaxValue;
 
         private static int renameCount;
 

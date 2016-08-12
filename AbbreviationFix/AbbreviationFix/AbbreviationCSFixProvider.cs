@@ -131,7 +131,7 @@ namespace AbbreviationFix
                         newName = baseName + index;
                     }
 
-                    Debug.WriteLine("{0} => {1} | {2}", token.ValueText, newName, document.Name);
+                    Debug.WriteLine("{0}|{1}|{2}", token.ValueText, newName, document.Name);
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),
