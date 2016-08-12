@@ -1,19 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
-using StyleCop.Analyzers;
-using StyleCop.Analyzers.Settings.ObjectModel;
-
-namespace AbbreviationFix
+﻿namespace AbbreviationFix
 {
-    using System;
     using System.Collections.Immutable;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.Diagnostics;
     using Microsoft.CodeAnalysis.VisualBasic;
     using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-    using Microsoft.CodeAnalysis.Diagnostics;
-    using StyleCop.Analyzers.Helpers;
+    using StyleCop.Analyzers;
+    using StyleCop.Analyzers.Settings.ObjectModel;
 
     [DiagnosticAnalyzer(LanguageNames.VisualBasic)]
     public class AbbreviationVBAnalyzer : DiagnosticAnalyzer

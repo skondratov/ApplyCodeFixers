@@ -130,7 +130,8 @@ namespace AbbreviationFix
                         newName = baseName + index;
                     }
 
-                    context.RegisterCodeFix(
+                    AbbreviationHelper.RegisterCodeFix(
+                        context,
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),
                             cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken),

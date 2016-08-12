@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using StyleCop.Analyzers.Settings.ObjectModel;
@@ -11,6 +13,10 @@ namespace AbbreviationFix
 {
     internal class AbbreviationHelper
     {
+        public const int MaxRenameCount = 1000;
+
+        private static int renameCount;
+
         /// <summary>
         /// Match opts (usefull for test):
         /// public static int NAME +
@@ -85,6 +91,18 @@ namespace AbbreviationFix
             }
 
             context.ReportDiagnostic(Diagnostic.Create(descriptor, identifier.GetLocation(), identifier.ValueText));
+        }
+
+        public static void RegisterCodeFix(CodeFixContext context, CodeAction action, Diagnostic diagnostic)
+        {
+            renameCount++;
+
+            if (renameCount > MaxRenameCount)
+            {
+                return;
+            }
+
+            context.RegisterCodeFix(action, diagnostic);
         }
 
         private static bool IsIdentifierValid(SyntaxToken identifier)

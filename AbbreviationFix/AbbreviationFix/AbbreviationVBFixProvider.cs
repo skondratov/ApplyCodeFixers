@@ -113,19 +113,12 @@ namespace AbbreviationFix
 
                 if (memberSyntax != null)
                 {
-                    SemanticModel semanticModel = await document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-
-                    var declaredSymbol = semanticModel.GetDeclaredSymbol(memberSyntax);
-                    if (declaredSymbol == null)
-                    {
-                        //continue;
-                    }
-
                     /*
                      * VB.NET - don't check existing members, because we change case only.
                      */
 
-                    context.RegisterCodeFix(
+                    AbbreviationHelper.RegisterCodeFix(
+                        context,
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),
                             cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken),
