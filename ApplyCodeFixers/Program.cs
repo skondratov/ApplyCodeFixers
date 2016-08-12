@@ -363,7 +363,7 @@ namespace StyleCopTester
             var processedProject = project.WithCompilationOptions(modifiedCompilationOptions);
 
             Compilation compilation = await processedProject.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
-            CompilationWithAnalyzers compilationWithAnalyzers = compilation.WithAnalyzers(analyzers, cancellationToken: cancellationToken);
+            CompilationWithAnalyzers compilationWithAnalyzers = compilation.WithAnalyzers(analyzers, processedProject.AnalyzerOptions, cancellationToken: cancellationToken);
 
             // In everything except Roslyn 1.1, we use GetAllDiagnosticsAsync and return the result.
             var diagnostics = await compilationWithAnalyzers.GetAllDiagnosticsAsync().ConfigureAwait(false);
