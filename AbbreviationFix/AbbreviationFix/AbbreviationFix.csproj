@@ -34,12 +34,15 @@
     <CodeAnalysisRuleSet>AbbreviationFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AbbreviationVBFixProvider.cs" />
     <Compile Include="AbbreviationVBAnalyzer.cs" />
     <Compile Include="AbbreviationCSAnalyzer.cs" />
-    <Compile Include="AbbreviationFixCodeFixProvider.cs" />
+    <Compile Include="AbbreviationCSFixProvider.cs" />
     <Compile Include="AbbreviationHelper.cs" />
+    <Compile Include="AccessLevelVBHelper.cs" />
     <Compile Include="GeneratedCodeAnalysisExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenameVBHelper.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -15,9 +15,9 @@ namespace AbbreviationFix
     /// <summary>
     /// Abbreviations are not allowed except officially register. Apply common naming rules for them
     /// </summary>
-    [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(AbbreviationFixCodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(AbbreviationCSFixProvider))]
     [Shared]
-    public class AbbreviationFixCodeFixProvider : CodeFixProvider
+    public class AbbreviationCSFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
@@ -134,7 +134,7 @@ namespace AbbreviationFix
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),
                             cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken),
-                            nameof(AbbreviationFixCodeFixProvider) + "_" + diagnostic.Id),
+                            nameof(AbbreviationCSFixProvider) + "_" + diagnostic.Id),
                         diagnostic);
                 }
             }

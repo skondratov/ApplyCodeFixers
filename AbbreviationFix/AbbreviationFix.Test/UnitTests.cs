@@ -68,7 +68,7 @@ namespace AbbreviationFix.Test
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new AbbreviationFixCodeFixProvider();
+            return new AbbreviationCSFixProvider();
         }
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()

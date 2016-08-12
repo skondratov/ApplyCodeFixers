@@ -304,8 +304,8 @@ namespace StyleCopTester
         private static List<FixerTask> GetFixerTasks()
         {
             var ret = new List<FixerTask>();
-            ret.Add(new FixerTask(new AbbreviationCSAnalyzer(), new AbbreviationFixCodeFixProvider()));
-            ret.Add(new FixerTask(new AbbreviationVBAnalyzer(), new AbbreviationFixCodeFixProvider()));
+            ret.Add(new FixerTask(new AbbreviationCSAnalyzer(), new AbbreviationCSFixProvider()));
+            ret.Add(new FixerTask(new AbbreviationVBAnalyzer(), new AbbreviationVBFixProvider()));
             //ret.Add(new FixerTask(new SA1003SymbolsMustBeSpacedCorrectly(), new SA1003CodeFixProvider()));
 
             return ret;
