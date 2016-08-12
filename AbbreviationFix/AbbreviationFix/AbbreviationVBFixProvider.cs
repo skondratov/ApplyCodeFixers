@@ -117,8 +117,7 @@ namespace AbbreviationFix
                      * VB.NET - don't check existing members, because we change case only.
                      */
 
-                    AbbreviationHelper.RegisterCodeFix(
-                        context,
+                    context.RegisterCodeFix(
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),
                             cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken),

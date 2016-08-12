@@ -13,7 +13,7 @@ namespace AbbreviationFix
 {
     internal class AbbreviationHelper
     {
-        public const int MaxRenameCount = 1000;
+        public const int MaxRenameCount = 100;
 
         private static int renameCount;
 
@@ -90,19 +90,11 @@ namespace AbbreviationFix
                 return;
             }
 
-            context.ReportDiagnostic(Diagnostic.Create(descriptor, identifier.GetLocation(), identifier.ValueText));
-        }
-
-        public static void RegisterCodeFix(CodeFixContext context, CodeAction action, Diagnostic diagnostic)
-        {
             renameCount++;
-
-            if (renameCount > MaxRenameCount)
+            if (renameCount <= MaxRenameCount)
             {
-                return;
+                context.ReportDiagnostic(Diagnostic.Create(descriptor, identifier.GetLocation(), identifier.ValueText));
             }
-
-            context.RegisterCodeFix(action, diagnostic);
         }
 
         private static bool IsIdentifierValid(SyntaxToken identifier)

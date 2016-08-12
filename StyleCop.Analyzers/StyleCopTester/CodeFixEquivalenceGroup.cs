@@ -138,6 +138,11 @@ namespace StyleCopTester
 
             CodeAction action = await this.FixAllProvider.GetFixAsync(context).ConfigureAwait(false);
 
+            if (action == null)
+            {
+                return ImmutableArray<CodeActionOperation>.Empty;
+            }
+
             return await action.GetOperationsAsync(cancellationToken).ConfigureAwait(false);
         }
 
