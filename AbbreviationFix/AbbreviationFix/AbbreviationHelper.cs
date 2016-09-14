@@ -1,14 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 using StyleCop.Analyzers.Settings.ObjectModel;
 
 namespace AbbreviationFix
 {
     internal class AbbreviationHelper
     {
+        public const int MaxRenameCount = int.MaxValue;
+
+        private static int renameCount;
+
         /// <summary>
         /// Match opts (usefull for test):
         /// public static int NAME +
@@ -67,6 +73,31 @@ namespace AbbreviationFix
 
                 yield return match;
             }
+        }
+
+        public static void CheckElementNameToken(SyntaxNodeAnalysisContext context, SyntaxToken identifier, AbbreviationSettings settings, DiagnosticDescriptor descriptor)
+        {
+            if (!IsIdentifierValid(identifier))
+            {
+                return;
+            }
+
+            IEnumerable<Match> matches = AbbreviationHelper.GetAbbreviationsInSymbol(identifier, settings);
+            if (!matches.Any())
+            {
+                return;
+            }
+
+            renameCount++;
+            if (renameCount <= MaxRenameCount)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(descriptor, identifier.GetLocation(), identifier.ValueText));
+            }
+        }
+
+        private static bool IsIdentifierValid(SyntaxToken identifier)
+        {
+            return !identifier.IsMissing && !string.IsNullOrEmpty(identifier.ValueText);
         }
     }
 }

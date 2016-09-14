@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Composition;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,13 +16,13 @@ namespace AbbreviationFix
     /// <summary>
     /// Abbreviations are not allowed except officially register. Apply common naming rules for them
     /// </summary>
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AbbreviationFixCodeFixProvider))]
+    [ExportCodeFixProvider(LanguageNames.CSharp, LanguageNames.VisualBasic, Name = nameof(AbbreviationCSFixProvider))]
     [Shared]
-    public class AbbreviationFixCodeFixProvider : CodeFixProvider
+    public class AbbreviationCSFixProvider : CodeFixProvider
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(AbbreviationFixAnalyzer.DiagnosticId); }
+            get { return ImmutableArray.Create(AbbreviationCSAnalyzer.DiagnosticId); }
         }
 
         /// <inheritdoc/>
@@ -130,11 +131,12 @@ namespace AbbreviationFix
                         newName = baseName + index;
                     }
 
+                    Debug.WriteLine("{0}|{1}|{2}", token.ValueText, newName, document.Name);
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             string.Format("Rename to {0}", newName),
                             cancellationToken => RenameHelper.RenameSymbolAsync(document, root, token, newName, cancellationToken),
-                            nameof(AbbreviationFixCodeFixProvider) + "_" + diagnostic.Id),
+                            nameof(AbbreviationCSFixProvider) + "_" + diagnostic.Id),
                         diagnostic);
                 }
             }
